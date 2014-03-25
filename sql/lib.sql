@@ -1,0 +1,9 @@
+CREATE TABLE Lib(
+    uid INTEGER,
+    tuid INTEGER,
+    lastupdate timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (uid) REFERENCES User(uid),
+    FOREIGN KEY (tuid) REFERENCES User(uid),
+    PRIMARY KEY(uid, tuid)
+) DEFAULT CHARSET=utf8;
+

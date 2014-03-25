@@ -1,0 +1,4 @@
+*.pyc
+config.py
+config_debug.py
+env/
