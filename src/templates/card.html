@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block extjs %}
+<script src="/static/jquery-2.1.0.min.js"></script>
+<script src="/static/bootstrap.min.js"></script>
+<script src="/static/card.js"></script>
+{% endblock extjs %}
+
+{% block extcss %}
+<link rel="stylesheet" href="/static/bootstrap.min.css">
+<link rel="stylesheet" href="/static/style.css">
+{% endblock extcss %}
+
+{% block title %}
+<title>{{card.name}}的名片</title>
+{% endblock title %}
+
+{% block main_body %}
+<header>
+<ul class="nav nav-pills" id="top">
+    <li><a href="/">名片夹</a></li>
+    <li><a href="/mycard">我的名片</a></li>
+</ul>
+</header>
+<div class="hidden" id="uid">{{card.uid}}</div>
+    <div class="container text-center">
+        <div class="cardgroup row">
+            <label class="col-xs-6">姓名</label>
+            <label id="name" class="col-xs-4">{{card.name}}</label>
+        </div>
+        <div class="cardgroup row">
+            <label class="col-xs-6">职位</label>
+            <label id="info" class="col-xs-4">{{card.info}}</label>
+        </div>
+        <div class="cardgroup row">
+            <label class="col-xs-6">邮箱</label>
+            <label id="email" class="col-xs-4">{{card.email}}</label>
+        </div>
+        <div class="cardgroup row">
+            <label class="col-xs-6">手机</label>
+            <label id="phone" class="col-xs-4">{{card.phone}}</label>
+        </div>
+        <button id="addcard">添加到名片夹</button>
+        <button id="delcard">从名片夹删除</button>
+        <a href="/"><button>返回</button></a>
+    </div>
+</div>
+{% endblock main_body %}
+
+{% block end_body %}
+<script>
+    var imgUrl = 'http://xxx/share_ico.png';
+    var lineLink = window.location.href;
+    var descContent = "desc";
+    var shareTitle = 'title';
+    var appid = 'tjuthelper';
+
+    function shareFriend() {
+        WeixinJSBridge.invoke('sendAppMessage',{
+            "appid": appid,
+            "img_url": imgUrl,
+            "img_width": "200",
+            "img_height": "200",
+            "link": lineLink,
+            "desc": descContent,
+            "title": shareTitle
+            }, function(res) {
+            //_report('send_msg', res.err_msg);
+        })
+    }
+    function shareTimeline() {
+        WeixinJSBridge.invoke('shareTimeline',{
+            "img_url": imgUrl,
+            "img_width": "200",
+            "img_height": "200",
+            "link": lineLink,
+            "desc": descContent,
+            "title": shareTitle
+            }, function(res) {
+            //_report('timeline', res.err_msg);
+        });
+    }
+    function shareWeibo() {
+        WeixinJSBridge.invoke('shareWeibo',{
+            "content": descContent,
+            "url": lineLink,
+            }, function(res) {
+            //_report('weibo', res.err_msg);
+        });
+    }
+    // 当微信内置浏览器完成内部初始化后会触发WeixinJSBridgeReady事件。
+    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        // 发送给好友
+        WeixinJSBridge.on('menu:share:appmessage', function(argv){
+            shareFriend();
+        });
+        // 分享到朋友圈
+        WeixinJSBridge.on('menu:share:timeline', function(argv){
+            shareTimeline();
+        });
+        // 分享到微博
+        WeixinJSBridge.on('menu:share:weibo', function(argv){
+            shareWeibo();
+        });
+    }, false);
+</script>
+{% endblock end_body %}

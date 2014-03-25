@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{% block extjs %}
+<script src="/static/jquery-2.1.0.min.js"></script>
+<script src="/static/bootstrap.min.js"></script>
+<script src="/static/mycard.js"></script>
+{% endblock extjs %}
+
+{% block extcss %}
+<link rel="stylesheet" href="/static/bootstrap.min.css">
+<link rel="stylesheet" href="/static/style.css">
+{% endblock extcss %}
+
+{% block title %}
+<title>我的名片</title>
+{% endblock title %}
+
+{% block main_body %}
+<header>
+<ul class="nav nav-pills" id="top">
+    <li><a href="/">名片夹</a></li>
+    <li><a href="/mycard">我的名片</a></li>
+</ul>
+</header>
+    <div class="hidden" id="uid">{{card.uid}}</div>
+    <div class="container text-center" id="card">
+        <div class="cardgroup row">
+            <label class="col-xs-6">姓名</label>
+            <label id="name" class="col-xs-4">{{card.name}}</label>
+        </div>
+        <div class="cardgroup row">
+            <label class="col-xs-6">职位</label>
+            <label id="info" class="col-xs-4">{{card.info}}</label>
+        </div>
+        <div class="cardgroup row">
+            <label class="col-xs-6">邮箱</label>
+            <label id="email" class="col-xs-4">{{card.email}}</label>
+        </div>
+        <div class="cardgroup row">
+            <label class="col-xs-6">手机</label>
+            <label id="phone" class="col-xs-4">{{card.phone}}</label>
+        </div>
+        <button id="editcard">编辑</button>
+        <button id="sharecard">分享</button>
+        <div class="error">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    <div class="container" id="editform">
+        <form role="form">
+            <div class="form-group">
+                <label for="inputName">姓名</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="" value={{card.name}}>
+            </div>
+            <div class="form-group">
+                <label for="inputInfo">职位</label>
+                <input type="text" class="form-control" id="info" name="info" placeholder="" value={{card.info}}>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="" value={{card.email}}>
+            </div>
+            <div class="form-group">
+                <label for="inputPhone">手机</label>
+                <input type="text" class="form-control" id="phone" name="phone" placeholder="" value={{card.phone}}>
+            </div>
+            <div class="form-group">
+                <input type="submit" id="submit" class="form-control">
+            </div>
+        </form>
+    </div>
+    <div id="mask" class="text-center">
+        <p>点击右上角分享</p>
+    </div>
+{% endblock main_body %}
+
+{% block end_body %}
+<script>
+    var imgUrl = 'http://xxx/share_ico.png';
+    var lineLink = window.location.href;
+    var descContent = "desc";
+    var shareTitle = 'title';
+    var appid = 'tjuthelper';
+
+    function shareFriend() {
+        WeixinJSBridge.invoke('sendAppMessage',{
+            "appid": appid,
+            "img_url": imgUrl,
+            "img_width": "200",
+            "img_height": "200",
+            "link": lineLink,
+            "desc": descContent,
+            "title": shareTitle
+            }, function(res) {
+            //_report('send_msg', res.err_msg);
+        })
+    }
+    function shareTimeline() {
+        WeixinJSBridge.invoke('shareTimeline',{
+            "img_url": imgUrl,
+            "img_width": "200",
+            "img_height": "200",
+            "link": lineLink,
+            "desc": descContent,
+            "title": shareTitle
+            }, function(res) {
+            //_report('timeline', res.err_msg);
+        });
+    }
+    function shareWeibo() {
+        WeixinJSBridge.invoke('shareWeibo',{
+            "content": descContent,
+            "url": lineLink,
+            }, function(res) {
+            //_report('weibo', res.err_msg);
+        });
+    }
+    // 当微信内置浏览器完成内部初始化后会触发WeixinJSBridgeReady事件。
+    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        // 发送给好友
+        WeixinJSBridge.on('menu:share:appmessage', function(argv){
+            shareFriend();
+        });
+        // 分享到朋友圈
+        WeixinJSBridge.on('menu:share:timeline', function(argv){
+            shareTimeline();
+        });
+        // 分享到微博
+        WeixinJSBridge.on('menu:share:weibo', function(argv){
+            shareWeibo();
+        });
+    }, false);
+</script>
+{% endblock end_body %}

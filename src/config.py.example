@@ -1,0 +1,14 @@
+class Config(object):
+    SECRET_KEY = ""
+    DEBUG = True
+
+    BASE_URL=""
+
+    MYSQL_ADDRESS = ""
+    MYSQL_PORT = ""
+    MYSQL_DBNAME = ""
+    MYSQL_USERNAME = ""
+    MYSQL_PASSWORD = ""
+
+    APPID=""
+    APPSECRET=""
